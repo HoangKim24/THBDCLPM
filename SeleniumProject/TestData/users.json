@@ -1,0 +1,8 @@
+{
+  "baseUrl": "https://localhost:7129",
+  "headless": true,
+  "validUser": {
+    "username": "Kim",
+    "password": "123321"
+  }
+}
