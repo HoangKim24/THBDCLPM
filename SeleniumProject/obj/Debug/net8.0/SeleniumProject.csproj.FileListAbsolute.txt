@@ -111,3 +111,4 @@ D:\TestLT\SeleniumProject\obj\Debug\net8.0\refint\SeleniumProject.dll
 D:\TestLT\SeleniumProject\obj\Debug\net8.0\SeleniumProject.pdb
 D:\TestLT\SeleniumProject\obj\Debug\net8.0\SeleniumProject.genruntimeconfig.cache
 D:\TestLT\SeleniumProject\obj\Debug\net8.0\ref\SeleniumProject.dll
+D:\TestLT\SeleniumProject\obj\Debug\net8.0\SeleniumProject.sourcelink.json

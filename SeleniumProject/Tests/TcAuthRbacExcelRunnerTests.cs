@@ -172,6 +172,9 @@ public class TcAuthRbacExcelRunnerTests
                 _ => false,
             };
 
+            var strict = EvaluateExpectedStrict(driver, expected);
+            passed = passed && strict.IsMatch;
+
             var screenshotName = $"NO{no:00}_{DateTime.Now:yyyyMMdd_HHmmss}.png";
             var screenshotFile = Path.Combine(screenshotDir, screenshotName);
             CaptureScreenshot(driver, screenshotFile);
@@ -184,6 +187,8 @@ public class TcAuthRbacExcelRunnerTests
             {
                 actual = $"Expected: {expected} | Actual: {actual}";
             }
+
+            actual = $"{actual} | StrictCheck: {strict.Reason}";
 
             return new CaseResult(passed, actual, screenshotFile, screenshotFile);
         }
@@ -590,6 +595,75 @@ public class TcAuthRbacExcelRunnerTests
             .Replace("_", string.Empty);
     }
 
+    private static StrictCheckResult EvaluateExpectedStrict(IWebDriver driver, string expected)
+    {
+        if (string.IsNullOrWhiteSpace(expected))
+        {
+            return new StrictCheckResult(true, "No expected text to validate.");
+        }
+
+        var tokens = ExtractExpectedTokens(expected);
+        if (tokens.Count == 0)
+        {
+            return new StrictCheckResult(false, "Expected text has no verifiable token.");
+        }
+
+        var combined = $"{driver.Url}\n{driver.Title}\n{driver.PageSource}".ToLowerInvariant();
+        var matched = tokens.Count(t => combined.Contains(t, StringComparison.Ordinal));
+        var required = GetRequiredTokenMatches(tokens.Count);
+
+        if (matched >= required)
+        {
+            return new StrictCheckResult(true, $"Matched {matched}/{tokens.Count} tokens (required {required}).");
+        }
+
+        return new StrictCheckResult(false, $"Matched {matched}/{tokens.Count} tokens (required {required}).");
+    }
+
+    private static List<string> ExtractExpectedTokens(string expected)
+    {
+        var separators = new[]
+        {
+            ' ', '\t', '\r', '\n', ',', '.', ';', ':', '|', '-', '_', '/', '\\',
+            '(', ')', '[', ']', '{', '}', '?', '!', '"', '\''
+        };
+
+        var stopWords = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "and", "the", "with", "from", "this", "that", "true", "false", "page", "data",
+            "noi", "dung", "ket", "qua", "duoc", "hien", "thi", "cho", "khi", "nhap", "vao"
+        };
+
+        return expected
+            .ToLowerInvariant()
+            .Split(separators, StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => p.Trim())
+            .Where(p => p.Length >= 4 && !stopWords.Contains(p))
+            .Distinct(StringComparer.Ordinal)
+            .Take(12)
+            .ToList();
+    }
+
+    private static int GetRequiredTokenMatches(int tokenCount)
+    {
+        if (tokenCount <= 2)
+        {
+            return tokenCount;
+        }
+
+        if (tokenCount <= 4)
+        {
+            return 2;
+        }
+
+        if (tokenCount <= 7)
+        {
+            return 3;
+        }
+
+        return 4;
+    }
+
     private static string ResolveExcelPath()
     {
         var candidate = Path.GetFullPath(Path.Combine(
@@ -634,4 +708,5 @@ public class TcAuthRbacExcelRunnerTests
     }
 
     private sealed record CaseResult(bool Passed, string Actual, string ScreenshotRelativePath, string ScreenshotAbsolutePath);
+    private sealed record StrictCheckResult(bool IsMatch, string Reason);
 }
