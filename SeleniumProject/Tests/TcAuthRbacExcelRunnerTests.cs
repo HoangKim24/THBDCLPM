@@ -180,15 +180,15 @@ public class TcAuthRbacExcelRunnerTests
             CaptureScreenshot(driver, screenshotFile);
 
             var actual = passed
-                ? $"Observed behavior matched expected result for NO {no}."
-                : $"Observed behavior did not match expected result for NO {no}.";
+                ? $"Khớp với hệ thống (Case {no})."
+                : $"Không đạt nội dung/trang mong đợi (Case {no}).";
 
             if (!string.IsNullOrWhiteSpace(expected))
             {
-                actual = $"Expected: {expected} | Actual: {actual}";
+                actual = $"Mong đợi: {expected} | Thực tế: {actual}";
             }
 
-            actual = $"{actual} | StrictCheck: {strict.Reason}";
+            actual = $"{actual} | {strict.Reason}";
 
             return new CaseResult(passed, actual, screenshotFile, screenshotFile);
         }
@@ -614,10 +614,10 @@ public class TcAuthRbacExcelRunnerTests
 
         if (matched >= required)
         {
-            return new StrictCheckResult(true, $"Matched {matched}/{tokens.Count} tokens (required {required}).");
+            return new StrictCheckResult(true, $"Check từ khóa: Khớp {matched}/{tokens.Count} từ khóa (cần {required}).");
         }
 
-        return new StrictCheckResult(false, $"Matched {matched}/{tokens.Count} tokens (required {required}).");
+        return new StrictCheckResult(false, $"Check từ khóa: Khớp {matched}/{tokens.Count} từ khóa (cần {required}).");
     }
 
     private static List<string> ExtractExpectedTokens(string expected)
