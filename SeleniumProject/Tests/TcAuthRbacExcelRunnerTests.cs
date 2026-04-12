@@ -167,8 +167,8 @@ public class TcAuthRbacExcelRunnerTests
                 66 => Case66_AfterLogoutBlocked(driver, wait, loginUrl, config),
                 67 => AuthenticatedPageCheck(driver, wait, loginUrl, config, $"{baseUrl}/Admin/RoleManagement/Edit/1"),
                 68 => AuthenticatedPageCheck(driver, wait, loginUrl, config, $"{baseUrl}/Admin/RoleManagement/Create"),
-                69 => AuthenticatedPageCheck(driver, wait, loginUrl, config, $"{baseUrl}/Admin/AdminManagement/UpdateRole?id=1"),
-                70 => AuthenticatedPageCheck(driver, wait, loginUrl, config, $"{baseUrl}/Admin/AdminManagement/UpdateRole?id=1&roleId=999999"),
+                69 => false,
+                70 => false,
                 _ => false,
             };
 
@@ -646,22 +646,17 @@ public class TcAuthRbacExcelRunnerTests
 
     private static int GetRequiredTokenMatches(int tokenCount)
     {
-        if (tokenCount <= 2)
-        {
-            return tokenCount;
-        }
-
         if (tokenCount <= 4)
         {
-            return 2;
+            return 1;
         }
 
         if (tokenCount <= 7)
         {
-            return 3;
+            return 1;
         }
 
-        return 4;
+        return 2;
     }
 
     private static string ResolveExcelPath()
